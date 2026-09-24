@@ -1,0 +1,92 @@
+E-Commerce Business Intelligence & SQL Analytics
+Brazilian E-Commerce Public Dataset by Olist
+===========================================================================
+
+PROJECT:
+E-Commerce Business Intelligence & SQL Analytics
+
+SOURCE DATASET:
+Kaggle - Brazilian E-Commerce Public Dataset by Olist
+
+ORIGINAL ORDERS:
+99,441
+
+SAMPLE ORDERS:
+20,000
+
+SAMPLING METHOD:
+Order-level sampling followed by relational filtering.
+Foreign-key relationships are preserved across tables.
+
+TABLES INCLUDED:
+
+olist_orders_dataset.csv
+Rows: 20,000
+
+olist_customers_dataset.csv
+Rows: 20,000
+
+olist_order_items_dataset.csv
+Rows: 22,735
+
+olist_order_payments_dataset.csv
+Rows: 20,979
+
+olist_order_reviews_dataset.csv
+Rows: 19,921
+
+olist_products_dataset.csv
+Rows: 11,455
+
+olist_sellers_dataset.csv
+Rows: 2,086
+
+product_category_name_translation.csv
+Rows: 70
+
+olist_geolocation_dataset.csv
+Not included in sample.
+
+RELATIONSHIPS:
+
+orders.customer_id
+    -> customers.customer_id
+
+order_items.order_id
+    -> orders.order_id
+
+order_items.product_id
+    -> products.product_id
+
+order_items.seller_id
+    -> sellers.seller_id
+
+order_payments.order_id
+    -> orders.order_id
+
+order_reviews.order_id
+    -> orders.order_id
+
+products.product_category_name
+    -> product_category_name_translation.product_category_name
+
+SQL ANALYTICS USE CASES:
+
+- Revenue analysis
+- Monthly sales trends
+- Average order value
+- Seller performance
+- Product category performance
+- Customer segmentation
+- Repeat customer analysis
+- Delivery SLA analysis
+- Late delivery analysis
+- Review score analysis
+- Payment method analysis
+- Customer lifetime value
+- Geographic sales analysis
+- Cohort and retention analysis
+- Seller ranking
+- Window functions
+- CTEs and subqueries
+- KPI dashboard queries

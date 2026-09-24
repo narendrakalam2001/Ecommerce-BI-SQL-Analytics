@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ecommerce-bi-sql-analytics
+    runtime: python
+    # Installs deps, then runs the FULL pipeline: builds artifacts/olist.db
+    # from data/sample/ (RAW_DATA_DIR falls back there when the local
+    # Windows path doesn't exist — see src/config.py) AND computes
+    # artifacts/kpi_snapshot.json + data_quality_report.json, so every
+    # endpoint (including /monitoring/snapshot) works immediately on deploy.
+    buildCommand: pip install -r requirements_api.txt && python scripts/run_pipeline.py
+    startCommand: uvicorn serving.ecommerce_api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.13

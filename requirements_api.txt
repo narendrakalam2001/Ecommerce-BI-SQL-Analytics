@@ -1,0 +1,12 @@
+# ============================================================
+# REQUIREMENTS — API deployment only (Render)
+# ============================================================
+
+fastapi
+uvicorn
+pydantic
+
+pandas==2.1.4
+numpy==1.26.4
+
+requests

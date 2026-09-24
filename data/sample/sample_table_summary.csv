@@ -1,0 +1,9 @@
+table,sample_rows
+orders,20000
+customers,20000
+order_items,22735
+order_payments,20979
+order_reviews,19921
+products,11455
+sellers,2086
+product_category_translation,70
