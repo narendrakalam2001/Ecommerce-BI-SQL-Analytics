@@ -241,7 +241,7 @@ Ecommerce-BI-SQL-Analytics/
 │   └── run_simulation.py                   # python scripts/run_simulation.py flash_sale_spike
 │
 ├── notebooks/
-│   ├── ecommerce_bi_eda.ipynb              # Professional EDA — 25 steps, fully executed
+│   ├── ecommerce_bi_eda.ipynb              # Professional EDA — 29 steps, fully executed
 │   └── ecommerce_bi_eda.html               # Rendered HTML export
 │
 ├── data/
