@@ -40,3 +40,11 @@ artifacts/*.json
 
 # --- Jupyter checkpoints ---
 .ipynb_checkpoints/
+
+# --- Notebook-generated outputs (only the .ipynb + .html deliverables
+#     are pushed from notebooks/ — any working-directory output folders
+#     the notebook writes to when run, e.g. exported mart CSVs or a
+#     scratch DB, are regenerated on re-run and never pushed) ---
+notebooks/olist_outputs/
+notebooks/*_outputs/
+notebooks/output/

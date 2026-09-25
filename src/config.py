@@ -42,6 +42,18 @@ RAW_FILES = {
     "category_translation": "product_category_name_translation.csv",
 }
 
+# geolocation (~1M rows, ~60MB) isn't used by any SQL KPI query or the
+# data quality gate — it's excluded from data/sample/ to keep the repo
+# small, so it's the one table that's OPTIONAL. If the file is present
+# (e.g. the full Kaggle dataset locally) it loads normally; if absent
+# (e.g. on Render/Streamlit Cloud using data/sample/), an empty table
+# with the correct columns is used instead so nothing downstream breaks.
+OPTIONAL_TABLES = {"geolocation"}
+GEOLOCATION_COLUMNS = [
+    "geolocation_zip_code_prefix", "geolocation_lat", "geolocation_lng",
+    "geolocation_city", "geolocation_state",
+]
+
 # ── Business rule thresholds ─────────────────────────────────
 LATE_DELIVERY_GRACE_DAYS   = 0        # delivered_date > estimated_date => late
 FAST_DELIVERY_DAYS         = 3        # <= this => "fast" delivery bucket

@@ -6,7 +6,7 @@ import os
 import logging
 import pandas as pd
 
-from src.config import RAW_DATA_DIR, RAW_FILES
+from src.config import RAW_DATA_DIR, RAW_FILES, OPTIONAL_TABLES, GEOLOCATION_COLUMNS
 
 logger = logging.getLogger(__name__)
 
@@ -43,12 +43,15 @@ def load_raw_tables(raw_dir: str = RAW_DATA_DIR) -> dict:
     """
     Loads all 9 Olist source tables into a dict of DataFrames.
     Accepts either .csv (Kaggle's native format) or .xlsx/.xls
-    (some local copies are saved as Excel instead). Raises
-    FileNotFoundError with the exact missing files if the dataset
-    hasn't been placed under RAW_DATA_DIR yet.
+    (some local copies are saved as Excel instead). All tables
+    except OPTIONAL_TABLES (geolocation) must be present; raises
+    FileNotFoundError with the exact missing files otherwise.
     """
     resolved = {key: _resolve_file_path(raw_dir, fname) for key, fname in RAW_FILES.items()}
-    missing = [fname for key, fname in RAW_FILES.items() if not os.path.exists(resolved[key])]
+    missing = [
+        fname for key, fname in RAW_FILES.items()
+        if key not in OPTIONAL_TABLES and not os.path.exists(resolved[key])
+    ]
     if missing:
         raise FileNotFoundError(
             "Missing raw Olist files in '{}': {}. "
@@ -58,6 +61,10 @@ def load_raw_tables(raw_dir: str = RAW_DATA_DIR) -> dict:
 
     tables = {}
     for key, path in resolved.items():
+        if key in OPTIONAL_TABLES and not os.path.exists(path):
+            tables[key] = pd.DataFrame(columns=GEOLOCATION_COLUMNS)
+            logger.info("Optional table '%s' not found — using empty placeholder", key)
+            continue
         tables[key] = _read_any(path)
         logger.info("Loaded %-22s shape=%s  <- %s", key, tables[key].shape, path)
 
@@ -97,7 +104,7 @@ def validate_raw_tables(tables: dict) -> None:
         if missing_cols:
             raise ValueError(f"Table '{key}' is missing required columns: {missing_cols}")
 
-        if df.empty:
+        if df.empty and key not in OPTIONAL_TABLES:
             raise ValueError(f"Table '{key}' loaded with 0 rows — check the source file")
 
     logger.info("Raw table validation passed for all %d tables", len(tables))
