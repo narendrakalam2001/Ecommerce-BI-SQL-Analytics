@@ -570,9 +570,7 @@ Derived from the actual pipeline run against the full 100K-order dataset:
 | Revenue anomaly months auto-flagged (2016 ramp-up) | **9** |
 | Pipeline runtime — raw CSVs to full KPI snapshot | **~33 seconds** |
 
-> At Flipkart/Meesho scale, this same SQL-first governance pattern — validate → quality-gate →
-> compute → monitor — is what lets finance, ops, and growth teams trust a dashboard number without
-> re-deriving it themselves.
+> This SQL-first pattern — validate → quality-gate → compute → monitor — is what lets finance, ops and growth teams trust a dashboard number without re-deriving it themselves.
 
 ---
 
@@ -599,11 +597,11 @@ Derived from the actual pipeline run against the full 100K-order dataset:
 
 **Narendra Kalam** — MSc Computer Science (Gold Medalist — NASSCOM, Full Stack Data Science + AI)
 
-> Building 20+ industry-level, end-to-end ML/BI systems across all domains.
+> Building 30+ industry-level, end-to-end ML systems across all domains.
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/narendra-kalam/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/narendra-kalam)
 [![Kaggle](https://img.shields.io/badge/Kaggle-Profile-20BEFF?logo=kaggle)](https://www.kaggle.com/narendrakalam)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-green?logo=github)](https://narendrakalam2001.github.io/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-green?logo=github)](https://narendrakalam2001.github.io)
 [![Email](https://img.shields.io/badge/Email-Contact-red?logo=gmail)](mailto:kalamnarendra2001@gmail.com)
 
 ### Portfolio Projects
@@ -636,6 +634,11 @@ Derived from the actual pipeline run against the full 100K-order dataset:
 | 24 | Health Insurance Cross-Sell | Insurance / BFSI | ExtraTrees | ROC-AUC = 0.8404 · 67.8% calls saved |
 | 25 | Ride Fare Price Prediction | Mobility / Ride-Hailing | LightGBM | RMSE = $3.81 · R² = 0.8419 · 55M rows |
 | 26 | **E-Commerce BI & SQL Analytics** | **Retail Analytics / BI** | **SQL + FastAPI + Streamlit** | **40 tests passing · 100K orders** |
+| 27 | AgriSense AI | AgriTech | EfficientNetB3 | Accuracy = 98.44% · Macro-F1 = 0.9843 · 38 classes |
+| 28 | AI Loan Underwriting Platform | BFSI / Fintech | XGBoost (credit + fraud) | Credit ROC-AUC = 0.858 · Fraud ROC-AUC = 0.955 · 242 tests |
+| 29 | CineMatch Pro | Entertainment / Media Tech | Hybrid SVD + TF-IDF + SBERT · CLIP · RoBERTa | RMSE = 0.8005 · Sentiment Acc = 94.26% · 56K posters |
+| 30 | DriveGuard AI | Computer Vision / Smart Cities | YOLOv8m + DeepSORT + Gemini RAG | mAP@0.5 = 0.680 · 31 API routes · 364 tests |
+| 31 | MathVision AI | EdTech / Computer Vision | TrOCR-large + SymPy | CER = 0.138 · 350/350 symbolic solved |
 
 ---
 
