@@ -3,6 +3,7 @@
 [![CI](https://github.com/narendrakalam2001/Ecommerce-BI-SQL-Analytics/actions/workflows/ci.yml/badge.svg)](https://github.com/narendrakalam2001/Ecommerce-BI-SQL-Analytics/actions)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://python.org)
 [![SQL](https://img.shields.io/badge/SQL-SQLite%2FANSI-4479A1.svg)](https://www.sqlite.org/)
+[![PySpark](https://img.shields.io/badge/PySpark-Notebook-E25A1C.svg?logo=apachespark&logoColor=white)](notebooks/pyspark_olist.ipynb)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-green.svg)](https://fastapi.tiangolo.com)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red.svg)](https://streamlit.io)
 [![Tests](https://img.shields.io/badge/Tests-40%2F40%20passing-brightgreen.svg)](tests/test_pipeline_core.py)
@@ -35,6 +36,9 @@ CLV signals. This project builds that exact layer end-to-end:
   equivalent of PSI feature drift, flagging genuine ramp-up/ramp-down periods automatically
 - A served **FastAPI** layer (13 KPI routes + a whitelisted ad-hoc `/query` route) and a 5-section
   **Streamlit** monitoring dashboard, backed by a live **order-event simulator** (3 scenarios)
+- A compact **PySpark notebook** (`notebooks/pyspark_olist.ipynb`) that re-implements the core KPIs with the
+  DataFrame API and `spark.sql` — explicit schemas, broadcast joins, window functions, `cache()`,
+  partitioned Parquet and `explain()` plans — as an honest *API-fluency demo* (Olist is too small to need Spark)
 
 This mirrors the exact SQL-first BI stack used in production at Indian e-commerce companies — and is
 why SQL is the first filter in almost every analyst/DS interview loop.
@@ -68,6 +72,7 @@ Actual output from `python scripts/run_pipeline.py` against the full 100K-order 
 | 🚀 **FastAPI (Swagger UI)** | [https://ecommerce-bi-sql-analytics.onrender.com/docs](https://ecommerce-bi-sql-analytics.onrender.com/docs) |
 | 📊 **Monitoring Dashboard** | [https://ecommerce-bi-sql-analytics.streamlit.app](https://ecommerce-bi-sql-analytics.streamlit.app) |
 | 📓 **EDA Notebook** | [notebooks/ecommerce_bi_eda.ipynb](notebooks/ecommerce_bi_eda.ipynb) |
+| ⚡ **PySpark Notebook** | [notebooks/pyspark_olist.ipynb](notebooks/pyspark_olist.ipynb) · [Kaggle (public)](https://www.kaggle.com/code/narendrakalam/ecommerce-bi-sql-analytics-pyspark-olist) |
 
 > ⚠️ Render free tier: first request may take 30–60 seconds (cold start).
 
@@ -242,7 +247,8 @@ Ecommerce-BI-SQL-Analytics/
 │
 ├── notebooks/
 │   ├── ecommerce_bi_eda.ipynb              # Professional EDA — 29 steps, fully executed
-│   └── ecommerce_bi_eda.html               # Rendered HTML export
+│   ├── ecommerce_bi_eda.html               # Rendered HTML export
+│   └── pyspark_olist.ipynb                 # PySpark API-fluency demo — joins · windows · cache · Parquet · explain()
 │
 ├── data/
 │   ├── raw/                                # Full Olist CSVs go here (not committed — see Quickstart)
@@ -476,6 +482,45 @@ Full endpoint list (13 KPI routes) documented interactively at `/docs`.
 
 ---
 
+## ⚡ PySpark Notebook — API-Fluency Demo
+
+[`notebooks/pyspark_olist.ipynb`](notebooks/pyspark_olist.ipynb) re-expresses the project's core SQL KPIs in
+**PySpark** (self-learned, applied here on the same Olist data). It runs locally with
+`SparkSession.builder.master("local[*]")` — no cluster — and is also published as a [public Kaggle notebook](https://www.kaggle.com/code/narendrakalam/ecommerce-bi-sql-analytics-pyspark-olist) (run end-to-end there on Spark 4.0.4, 4 cores).
+
+| Step | What it demonstrates |
+|---|---|
+| **1. Setup** | `local[*]` session · all **9 CSVs** read with explicit `StructType` schemas in `FAILFAST` mode (no `inferSchema`) |
+| **2. Joins** | orders · items · payments · customers · products (+ sellers, category lookup); small dimensions wrapped in `broadcast()`; many-side tables aggregated to order grain first, with a revenue reconciliation check |
+| **3. KPIs** | monthly revenue · late-delivery rate · top categories · repeat-customer rate (same definitions as `sql/*.sql`) |
+| **4. Window functions** | `rank` / `dense_rank` top sellers per state · running revenue total · the same logic again in `spark.sql` with **CTEs**, checked equal to the DataFrame version |
+| **5. Optimisation** | `explain()` physical plans (broadcast joins, partition pruning) · `cache()` · Parquet written with `partitionBy(year, month)` |
+| **6. Honest check** | Spark vs pandas timed on the same aggregate, results compared first |
+
+**Verified against the SQL layer** (full 100K-order dataset): the PySpark scoreboard reproduces the SQLite pipeline's
+`kpi_snapshot.json` exactly — revenue `R$ 15,419,773.75`, `96,478` delivered orders, AOV `R$ 159.83`, late rate
+`8.11%`, repeat rate `3.0%` (difference `0.00` on all five). The notebook also shows that a naive `items × payments`
+join would have inflated revenue by `4.50%`.
+
+> **Honest note — API fluency demo, data is small.** Olist is only ~100K orders, so Spark is **not** needed here and
+> can be slower than pandas (Step 6 measures it). The notebook exists to show *how* the same logic is written in Spark
+> and *when* Spark becomes the right tool (data beyond one machine, distributed storage, cluster jobs) — not to claim
+> that this dataset required it.
+
+**Run it**
+
+```bash
+pip install pyspark pandas      # needs Java 17+ for Spark 4.x (Java 8/11/17 for Spark 3.5.x)
+# full CSVs in data/raw/ (or set RAW_DATA_DIR); falls back to data/sample/ automatically
+jupyter notebook notebooks/pyspark_olist.ipynb
+```
+
+On Kaggle: attach the [Olist dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) — the data folder is
+auto-detected. Scratch outputs (Parquet, Spark warehouse) go to `notebooks/pyspark_outputs/`, which is git-ignored.
+`pyspark` is deliberately **not** in `requirements.txt`, so CI and the API/dashboard images stay light.
+
+---
+
 ## 🛡️ Governance — Data Quality Gate (3 Checks)
 
 Every pipeline run validates all 9 tables against **3 gates** before a single KPI is computed:
@@ -543,6 +588,7 @@ Result: 40 passed · 0 failed
 |---|---|
 | **Database** | SQLite — 9-table star schema, 10 join indexes, zero external DB dependency |
 | **SQL Style** | Standard ANSI SQL (CTEs, window functions `NTILE`/`LAG`) — portable to Postgres/MySQL |
+| **PySpark** | Local-mode demo notebook — explicit schemas, `broadcast` joins, `rank`/`dense_rank` + running-total windows, Spark SQL CTEs, `cache()`, partitioned Parquet, `explain()`; KPIs reconcile exactly with the SQL layer |
 | **Data Quality** | 3-gate check: null-rate, referential integrity, duplicate PK — fails pipeline before KPIs compute |
 | **Customer Grain** | `customer_unique_id` (not `customer_id`) for all repeat-purchase/RFM/churn analysis |
 | **RFM Segmentation** | Quartile-scored (`NTILE(4)`) Recency/Frequency/Monetary → 5 named business segments |
@@ -585,6 +631,9 @@ Derived from the actual pipeline run against the full 100K-order dataset:
 - **Revenue anomaly alerts are most sensitive in Sep–Dec 2016** (the platform's ramp-up period with
   very low order volume) — this is the monitoring system correctly catching genuine early-stage
   volatility, not a false-positive bug
+- **The PySpark notebook is an API-fluency demo, not a scale argument** — at ~100K orders pandas/SQLite do the same
+  work with less overhead (the notebook benchmarks this honestly); `pyspark` is an optional extra and is not part of
+  `requirements.txt` or CI
 - Dataset is **Brazil-only** (2016–2018); KPI definitions (e.g., late-delivery threshold, RFM
   quartiles) are configurable in `src/config.py` and would need re-tuning for a different market
 - This is a **SQL analytics & BI project**, not a predictive-ML system — there is no trained model,
@@ -633,7 +682,7 @@ Derived from the actual pipeline run against the full 100K-order dataset:
 | 23 | Insurance Premium Prediction | Insurance / Actuarial ML | RandomForest | RMSLE = 1.1586 · 1.2M real policies |
 | 24 | Health Insurance Cross-Sell | Insurance / BFSI | ExtraTrees | ROC-AUC = 0.8404 · 67.8% calls saved |
 | 25 | Ride Fare Price Prediction | Mobility / Ride-Hailing | LightGBM | RMSE = $3.81 · R² = 0.8419 · 55M rows |
-| 26 | **E-Commerce BI & SQL Analytics** | **Retail Analytics / BI** | **SQL + FastAPI + Streamlit** | **40 tests passing · 100K orders** |
+| 26 | **E-Commerce BI & SQL Analytics** | **Retail Analytics / BI** | **SQL + PySpark + FastAPI + Streamlit** | **40 tests passing · 100K orders** |
 | 27 | AgriSense AI | AgriTech | EfficientNetB3 | Accuracy = 98.44% · Macro-F1 = 0.9843 · 38 classes |
 | 28 | AI Loan Underwriting Platform | BFSI / Fintech | XGBoost (credit + fraud) | Credit ROC-AUC = 0.858 · Fraud ROC-AUC = 0.955 · 242 tests |
 | 29 | CineMatch Pro | Entertainment / Media Tech | Hybrid SVD + TF-IDF + SBERT · CLIP · RoBERTa | RMSE = 0.8005 · Sentiment Acc = 94.26% · 56K posters |

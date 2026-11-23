@@ -17,3 +17,6 @@ requests
 # Testing
 pytest
 pytest-cov
+
+# Optional — only for notebooks/pyspark_olist.ipynb (needs Java 17+ for Spark 4.x). Not installed in CI.
+# pyspark
